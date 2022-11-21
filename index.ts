@@ -25,6 +25,7 @@ interface Entry {
   mal?: number;
   anilist?: number;
   ann?: number;
+  kitsu?: number;
 }
 
 console.log("Getting anilist data...");
@@ -44,7 +45,7 @@ const lastPage = await getLastPage();
 
 const pageList = Array.from(Array(lastPage), (_, i) => i + 1);
 
-const maxWorkers = 4;
+const maxWorkers = 1;
 
 const workerList = Array.from(
   Array(lastPage > maxWorkers ? maxWorkers : lastPage),
@@ -76,7 +77,7 @@ const getAnilist: () => Promise<Anilist[]> = () =>
             new Uint8Array(
               new TextEncoder().encode(
                 `Fetching Anilist page: ${lastPage -
-                  pageList.length}/${lastPage}`,
+                pageList.length}/${lastPage}`,
               ),
             ),
           );
@@ -95,10 +96,10 @@ const getAnilist: () => Promise<Anilist[]> = () =>
     }
   });
 
-const ANILIST_MAL: Anilist[] = await getAnilist();
+// const ANILIST_MAL: Anilist[] = await getAnilist();
 
 console.log();
-console.log(`Found ${ANILIST_MAL.length} Anilist entries`);
+// console.log(`Found ${ANILIST_MAL.length} Anilist entries`);
 
 console.log("Downloading manami data");
 
@@ -113,9 +114,9 @@ const ANIDB_MAL_ANN_ANILIST: Entry[] = manamiData.data.map((each: Manami) => {
       entry.anidb = Number(url.replace("https://anidb.net/anime/", ""));
     } else if (url.startsWith("https://myanimelist.net/anime/")) {
       entry.mal = Number(url.replace("https://myanimelist.net/anime/", ""));
-      if (ANILIST_MAL.some((e) => e.idMal === entry.mal)) {
-        entry.anilist = ANILIST_MAL.filter((e) => e.idMal === entry.mal)[0].id;
-      }
+      // if (ANILIST_MAL.some((e) => e.idMal === entry.mal)) {
+      //   entry.anilist = ANILIST_MAL.filter((e) => e.idMal === entry.mal)[0].id;
+      // }
     } else if (
       url.startsWith("https://animenewsnetwork.com/encyclopedia/anime.php?id=")
     ) {
@@ -125,6 +126,24 @@ const ANIDB_MAL_ANN_ANILIST: Entry[] = manamiData.data.map((each: Manami) => {
           "",
         ),
       );
+    } else if (
+      url.startsWith("https://kitsu.io/anime/")
+    ) {
+      entry.kitsu = Number(
+        url.replace(
+          "https://kitsu.io/anime/",
+          "",
+        )
+      )
+    } else if (
+      url.startsWith("https://anilist.co/anime/")
+    ) { 
+      entry.anilist = Number(
+        url.replace(
+          "https://anilist.co/anime/",
+          "",
+        )
+      )
     }
   }
   return entry;

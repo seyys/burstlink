@@ -24,7 +24,8 @@ const handler = async (message: MessageEvent) => {
           }`,
     }),
     headers: { "Content-Type": "application/json" },
-  }).then((res) => res.json());
+  }).then((res) => res.json())
+  .catch((e) => console.log("test",e));
   if (response.data) {
     self.postMessage(response.data);
   } else if (
